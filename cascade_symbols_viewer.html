@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cascade SF Symbols Viewer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; min-height: 100vh; }
+  header { padding: 24px 24px 0; }
+  h1 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #888; margin-bottom: 16px; }
+  .search-wrap { position: sticky; top: 0; background: #0f0f0f; padding: 12px 24px; border-bottom: 1px solid #222; z-index: 10; display: flex; gap: 10px; align-items: center; }
+  #search { flex: 1; padding: 10px 14px; font-size: 14px; border: 1px solid #333; border-radius: 8px; background: #1a1a1a; color: #e0e0e0; outline: none; }
+  #search:focus { border-color: #555; }
+  #count { font-size: 13px; color: #666; white-space: nowrap; }
+  #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; padding: 16px 24px 40px; }
+  .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 12px 8px 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: border-color 0.15s, background 0.15s; user-select: none; }
+  .card:hover { border-color: #555; background: #222; }
+  .card:active { transform: scale(0.96); }
+  .card img { width: 36px; height: 36px; object-fit: contain; filter: invert(1) brightness(0.85); image-rendering: -webkit-optimize-contrast; }
+  .card img.err { opacity: 0.2; }
+  .card-name { font-size: 10px; color: #888; text-align: center; word-break: break-all; line-height: 1.4; }
+  .card:hover .card-name { color: #bbb; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #fff; color: #111; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 500; display: none; z-index: 999; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+  .more-btn { grid-column: 1 / -1; text-align: center; padding: 16px; color: #666; font-size: 13px; cursor: pointer; }
+  .more-btn:hover { color: #aaa; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Cascade SF Symbols</h1>
+  <p class="sub">คลิกที่ symbol เพื่อ copy ชื่อ</p>
+</header>
+
+<div class="search-wrap">
+  <input id="search" type="text" placeholder="ค้นหา เช่น star, arrow, heart, gear..." autocomplete="off" />
+  <span id="count"></span>
+</div>
+
+<div id="grid"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const symbols = {
+abc:"100440409146443",abs:"92363621005271",absBrakesignal:"96650934172241",absBrakesignalSlash:"99031194280970",absCircle:"131263640878114",accessibility:"123674923606554",accessibilityBadgeArrowUpRight:"131591143368145",airConditionerHorizontal:"87575263873354",airConditionerVertical:"106787802446841",airPurifier:"87703577858510",airplane:"127042155092569",airplaneArrival:"125165623922032",airplaneCircle:"117680366547881",airplaneDeparture:"114170964619388",airplayaudio:"132916942955864",airplayaudioBadgeExclamationmark:"136447514823399",airplayaudioCircle:"88830131647623",airplayvideo:"84461284428154",airplayvideoBadgeExclamationmark:"118815409444339",airplayvideoCircle:"76641158810884",alarm:"132188666358118",alarmWavesLeftAndRight:"105400305752811",alignHorizontalCenter:"95921584129344",alignHorizontalLeft:"106940079409954",alignHorizontalRight:"101931127005354",alignVerticalBottom:"92406406320406",alignVerticalCenter:"122679867744486",alignVerticalTop:"101426271263942",ant:"94075524151725",antCircle:"96475495112465",antennaRadiowavesLeftAndRight:"72723891852899",antennaRadiowavesLeftAndRightCircle:"117240621000245",antennaRadiowavesLeftAndRightSlash:"102128620863450",app:"101315629151886",appBadge:"102624785615875",appBadgeCheckmark:"99120212063507",archivebox:"135383976129056",archiveboxCircle:"101202683672622",arrowBackward:"112330339418031",arrowBackwardCircle:"133754892259320",arrowCirclepath:"82375876675933",arrowClockwise:"134482647457048",arrowClockwiseCircle:"124617274153370",arrowCounterclockwise:"80049773948475",arrowCounterclockwiseCircle:"82641775112281",arrowDown:"120893366817058",arrowDownCircle:"135687701059912",arrowForward:"112440157421837",arrowForwardCircle:"96454424569563",arrowLeft:"112148732853002",arrowLeftAndRight:"79428652692177",arrowLeftAndRightCircle:"115633173343620",arrowLeftCircle:"92906985394534",arrowRight:"113471694745518",arrowRightCircle:"105967295580928",arrowTriangle2Circlepath:"97876840821545",arrowUp:"111856178352737",arrowUpAndDown:"91105704080398",arrowUpAndDownCircle:"82400034655781",arrowUpCircle:"88743831776989",arrowshapeBackward:"139167863296495",arrowshapeBackwardCircle:"107550168752276",arrowshapeForward:"91304613238570",arrowshapeForwardCircle:"118241293673963",arrowshapeLeft:"122480071123738",arrowshapeRight:"109069611579824",arrowshapeTurnUpBackward:"139873237324835",arrowshapeTurnUpBackwardCircle:"94708728708136",arrowshapeTurnUpForward:"96433164067727",arrowshapeTurnUpForwardCircle:"101016787745031",arrowshapeTurnUpLeft:"117847648137876",arrowshapeTurnUpLeftCircle:"113730508554004",arrowshapeTurnUpRight:"72549478489418",arrowshapeTurnUpRightCircle:"94130254046801",arrowtriangleDown:"72787893293395",arrowtriangleForward:"132838813881036",arrowtriangleLeft:"91265849254908",arrowtriangleRight:"112980405706132",arrowtriangleUp:"130152840566831",at:"123781978634436",atBadgeMinus:"131415499619133",atBadgePlus:"87035690727729",atCircle:"122313756366525",atom:"78600959704648",backpack:"138470539701582",backpackCircle:"133623902024586",backward:"132891262469005",backwardCircle:"110874661858454",backwardEnd:"133316887211041",backwardEndCircle:"120552658756659",bag:"98838042666176",bagBadgeMinus:"75393349013094",bagBadgePlus:"85996805561778",bagCircle:"73082954287278",balloon:"99823122145564",balloon2:"93507693460257",bandage:"130780589444721",banknote:"108069782154566",barcode:"136753767679432",barcodeViewfinder:"118601521304332",barometer:"135390591486370",baseball:"105717198391714",baseballCircle:"92833075753616",basket:"93773308549052",basketball:"137444151625842",basketballCircle:"72528201476323",bathtub:"81614353294538",bell:"108730354061577",bellBadge:"126861827876338",bellBadgeCircle:"120944439956890",bellBadgeSlash:"97481645339034",bellCircle:"89781868535223",bellSlash:"106134669703906",bellSlashCircle:"82705838720523",bicycle:"73108279549194",bicycleCircle:"114098204063015",binoculars:"113174504252721",binocularsCircle:"109842784819874",bird:"105045939393151",birdCircle:"116806463752157",birthdayCake:"121877168692995",bold:"83774109857539",bolt:"77814408500232",boltBadgeCheckmark:"92057948269674",boltBadgeClock:"91664084918442",boltCircle:"104194065853669",boltHeart:"74340142617776",boltSlash:"72834901637431",boltSlashCircle:"121063130817047",boltSquare:"110722856720397",book:"124521438156260",bookCircle:"93034857300426",bookClosed:"125163356428251",bookClosedCircle:"102723323908022",bookmark:"83006767513596",bookmarkCircle:"87706305557149",bookmarkSlash:"85980073948000",brain:"129788246923948",brainHeadProfile:"78520739010036",briefcase:"124399879307020",briefcaseCircle:"112640004758209",bubble:"121181767293645",bubbleCircle:"100446732387558",bubbleLeft:"132260167571866",bubbleLeftAndBubbleRight:"108345337858311",building:"74497526931655",building2:"135140327189124",buildingColumns:"108085258638798",buildingColumnsCircle:"93580334594628",burst:"92440263503096",bus:"115545056568030",cabinet:"81281632410063",calendar:"79737535968642",calendarBadgeCheckmark:"92566052530481",calendarBadgeClock:"133151027082077",calendarBadgeMinus:"77213466439908",calendarBadgePlus:"135617859505274",calendarCircle:"139255178536196",camera:"89945218134735",cameraAperture:"121021899879686",cameraCircle:"117792452185137",cameraFilters:"88884914634550",car:"115153742682128",carCircle:"132581565652122",carFerry:"104827520064780",carRear:"90389088164488",carSide:"109616461699485",cart:"71113964288896",cartBadgeMinus:"83371939881266",cartBadgePlus:"117262987573775",cartCircle:"95648168138395",cat:"86250189983975",catCircle:"116692607667199",chair:"99351023008668",chairLounge:"124785536550390",checkmark:"80083151652572",checkmarkCircle:"121827912892409",checkmarkSeal:"76205965014688",checkmarkShield:"128784966069296",checkmarkSquare:"125568270907833",chevronDown:"99166577372338",chevronDownCircle:"138287742474054",chevronForward:"94291254481690",chevronLeft:"117321898070552",chevronLeftCircle:"76379402917087",chevronRight:"109778622420693",chevronRightCircle:"105626450271578",chevronUp:"95197501590678",chevronUpChevronDown:"119655894508741",chevronUpCircle:"81279484459134",circle:"74410186179968",circleBadgePlus:"118985536139784",clock:"71865878247301",clockArrow2Circlepath:"120448260426448",clockArrowCirclepath:"83500708276723",clockBadge:"95543881222190",clockCircle:"104879643385324",cloud:"72439815109377",cloudBolt:"138545210167719",cloudBoltRain:"82572191900241",cloudCircle:"138009396818670",cloudDrizzle:"101174065846367",cloudFog:"135490835996578",cloudMoon:"128637077638309",cloudRain:"137913324435715",cloudRainCircle:"125770718460295",cloudSnow:"105959993072064",cloudSun:"76219717200572",command:"87759558375295",commandCircle:"108217555020959",compassDrawing:"134681338415164",cpu:"87589615309566",creditcard:"77524266713323",creditcardCircle:"99286306323174",crop:"138327728447328",cropRotate:"121012418950102",cross:"75739153896374",crossCircle:"117192023436084",crown:"107058160728845",cube:"113324099127598",cupAndSaucer:"70882561472053",curlybraces:"122379752309193",cursorarrow:"76353347413637",cursorarrowRays:"126392116415147",cylinder:"114645416111348",deleteLeft:"90957127933134",deleteRight:"81407575985610",desktopcomputer:"96859406924780",desktopcomputerAndArrowDown:"129425011002064",diamond:"98755623140060",diamondCircle:"75496260365440",dice:"79901563934016",doc:"80680488161934",docAppend:"92502742629439",docCircle:"114937888569701",docOnClipboard:"94277113748864",docOnDoc:"74221368188325",docText:"106048817459549",dog:"140572982890767",dogCircle:"122395060321313",dollarsign:"109669077542924",dollarsignCircle:"80248987427627",dollarsignSquare:"104039678975004",doorLeftHandClosed:"127332916375130",doorLeftHandOpen:"88478617958400",doorRightHandClosed:"90865411752842",doorRightHandOpen:"120226629467300",drop:"111642008758112",dropCircle:"72183646280977",dropTriangle:"98703665707348",dumbbell:"116727072092392",ear:"76035901479639",earBadgeCheckmark:"91787437407196",eject:"105034421093103",ejectCircle:"71243734846382",ellipsis:"77216475856263",ellipsisBubble:"81757807051403",ellipsisCircle:"99199083887688",ellipsisRectangle:"129501243800814",envelope:"135422700018555",envelopeBadge:"103845751654589",envelopeCircle:"134475749846380",envelopeOpen:"136933873070357",equal:"104261784698979",equalCircle:"94173011590634",eraser:"95305220254055",eraserLineDashed:"96768889006093",eurosign:"136356099634353",eurosignCircle:"126918102604088",exclamationmark:"123140835548673",exclamationmark2:"75679665682282",exclamationmarkBubble:"105426640441082",exclamationmarkCircle:"92439494359035",exclamationmarkOctagon:"123387035798080",exclamationmarkShield:"102928689678762",exclamationmarkSquare:"90730727329485",exclamationmarkTriangle:"106021451924989",eye:"138470672816964",eyeCircle:"138323405545081",eyeSlash:"91677658237967",eyeSlashCircle:"126482458192010",eyedropper:"118390984141654",eyedropperFull:"105807600321254",eyeglasses:"73685932692008",faces:"102614227688607",faceSmiling:"73031260403382",faceid:"95982198583714",fan:"125371771993888",fanDesk:"126417457946871",faxmachine:"100326873282556",ferry:"121251155343877",figureRun:"124566141570199",figureRunCircle:"96855548794052",figureStand:"136221195306106",figureWalk:"103110169492468",figureWalkCircle:"73018858953327",figureFall:"100202475660961",figureChild:"130972091582571",film:"139278965589106",filmCircle:"111466196163243",fish:"95630600389657",fishCircle:"75389797082516",flag:"102363227837340",flag2Crossed:"70682050300398",flagBadgeEllipsis:"78600854244026",flagCheckered:"78821229595515",flagCheckered2Crossed:"78412090520637",flagCheckeredCircle:"123648433572775",flagCircle:"85706804053151",flagSlash:"89297263331746",flame:"110230166553578",flameCircle:"71866528782393",flask:"84982251579563",folder:"115997264836727",folderBadgeMinus:"135738422209124",folderBadgePlus:"114979073485854",folderCircle:"117008504066827",football:"99824306110508",footballCircle:"82719329435185",forkKnife:"104969007607141",forkKnifeCircle:"90290316044160",forward:"95245574750012",forwardCircle:"126501657617147",forwardEnd:"132223524998425",forwardEndCircle:"138908494671044",gamecontroller:"119096220409886",gear:"93463417713731",gearBadge:"103383744725187",gearCircle:"115384869742127",gearshape:"117049869817852",gearshapeCircle:"129388953569327",gift:"124716473916822",giftCircle:"95170019998697",globe:"101767218366266",globeAmericas:"119372469642645",globeAsiaAustralia:"120808677555396",globeEuropeAfrica:"106142876012163",graduationcap:"107016904273927",graduationcapCircle:"101968938789158",greaterthan:"100154976668906",grid:"140178861976840",gridCircle:"130234958416171",guitars:"89552692956885",gymBag:"91936141424860",gyroscope:"132244916029235",hammer:"103131584528770",hammerCircle:"74490498390973",handDraw:"77538773866494",handPointDown:"119738942472362",handPointLeft:"81548791076395",handPointRight:"88897279924338",handPointUp:"135989287278173",handRaised:"82019405080955",handRaisedCircle:"77964496621148",handRaisedSlash:"99551377759203",handTap:"128075990773888",handThumbsdown:"122067645581433",handThumbsdownCircle:"126932375202246",handThumbsup:"71873367293048",handThumbsupCircle:"127941020251542",handWave:"107235477795246",handbag:"132152356168017",handsClap:"77562764751019",hanger:"82820384563336",hare:"81680749337155",hareCircle:"117167437846510",headphones:"106715715835631",headphonesCircle:"117557349152734",heart:"109117761441183",heartCircle:"108890463961676",heartSlash:"114165709625494",heartSlashCircle:"96341086302072",heartSquare:"102824926831120",helm:"112363025158819",hexagon:"117932412411502",highlighter:"77806724703440",hockeyPuck:"123663110103043",hockeyPuckCircle:"136584542208226",homekit:"129816863247706",hourglass:"109119388646355",hourglassCircle:"74121557568551",house:"75142559607619",houseAndFlag:"75627724392758",houseCircle:"84194969699478",hurricane:"129364860302491",hurricaneCircle:"122254392121714",icloud:"101659161537443",icloudAndArrowDown:"124106021512201",icloudAndArrowUp:"130588908975143",icloudCircle:"109505824359041",icloudSlash:"110954111758183",info:"82779181850384",infoBubble:"110157898124544",infoCircle:"79229862313887",infoSquare:"73485756772281",ipad:"94420007219781",ipadLandscape:"110038748912228",iphone:"111795206347277",iphoneCircle:"86067583325421",iphoneLandscape:"76557835009779",iphoneSlash:"79469285052471",italic:"139292651945967",key:"106796214107043",keyHorizontal:"138166984818495",keyIcloud:"104546203584651",keyboard:"70993223382855",ladybug:"79532640477990",ladybugCircle:"93722787684416",laptopcomputer:"107281859794400",laserBurst:"84243364035565",lasso:"119920715432629",lassoBadgeSparkles:"72681411350757",leaf:"104165823693595",leafCircle:"105670621279893",lessthan:"106161556782338",lightbulb:"133139109847915",lightbulbCircle:"118221893668950",lightbulbSlash:"75943132819488",link:"129995000515171",linkCircle:"130455786914257",listBullet:"100123835173933",listBulletCircle:"136723888881994",listBulletIndent:"102199183886425",listNumber:"91244323866171",listStar:"110452119166185",location:"122678502104360",locationCircle:"113957216146271",locationNorth:"82169739589093",locationNorthCircle:"132843911874563",locationSlash:"91990528463774",lock:"119125428737838",lockCircle:"93274298465206",lockDoc:"122591748345523",lockOpen:"82132779304054",lockOpenRotation:"91539290703274",lockRectangle:"130656167137532",lockShield:"136853703264345",lockSlash:"101795791789254",lockSquare:"98566443709245",macbook:"86472747691252",magnifyingglass:"134122727615034",magnifyingglassCircle:"86464344711108",map:"136805527671928",mapCircle:"77610408904670",mappin:"103020839450072",mappinAndEllipse:"126322593782895",mappinCircle:"74179773070764",mappinSlash:"127844876046017",medal:"134971613911509",megaphone:"137016768703735",memories:"109786533078027",message:"72241028686449",messageBadge:"95008660525929",messageCircle:"87601751094524",mic:"70559142840213",micCircle:"97798740260123",micSlash:"77413617305085",minus:"120243537927411",minusCircle:"75645831305441",minusMagnifyingglass:"123606884277714",moon:"134740339752496",moonCircle:"71384714868629",moonStars:"87751912018193",moonZzz:"119950763586659",mosaic:"103642437897783",mountain2:"103253627588735",mountain2Circle:"75596088969984",musicMic:"126510932173223",musicNote:"133237720818172",musicNoteList:"138145661496558",network:"95447228158380",networkSlash:"136179450801365",newspaper:"94882365651933",newspaperCircle:"124076154041904",nose:"137854511086792",note:"93279801394323",noteText:"128260562606530",octagon:"112640529146294",oilcan:"73751343226394",paintbrush:"78778796291471",paintbrushPointed:"124104285860059",paintpalette:"103052185781646",paperclip:"133243253436828",paperclipCircle:"83283601046729",paperplane:"83069617793753",paperplaneCircle:"134742116792128",pause:"139216971418437",pauseCircle:"98946488847229",pawprint:"95126175157453",pawprintCircle:"75537067952063",pencil:"79600866067272",pencilCircle:"92041537326764",pencilLine:"86421421264789",person:"116021451912285",person2:"111998470155308",person2Circle:"120032420649331",person3:"101994328734673",personCircle:"129465160382108",personCropCircle:"110606444275572",phone:"101851519628829",phoneCircle:"113071989329960",phoneDown:"117300651986088",photo:"119891718242970",photoCircle:"135595834116845",photoStack:"131603418978165",pill:"122458068597877",pillCircle:"70668216406589",pin:"104248915186202",pinCircle:"70640396547151",pinSlash:"126241136504528",play:"93150903163211",playCircle:"105691552662846",playRectangle:"112783672572897",playSquare:"100507695206960",playpause:"84516015334328",plus:"116313904677555",plusBubble:"79114500158071",plusCircle:"106498819435037",plusMagnifyingglass:"106605689820309",plusMessage:"84287372349882",plusRectangle:"115868131231932",plusSquare:"81291475389001",plusminus:"111531324704436",power:"72689307860434",powerCircle:"113272254391277",printer:"83881840159268",puzzlepiece:"98099182294534",puzzlepieceExtension:"130117895810806",pyramid:"95463742492961",qrcode:"140725727320555",qrcodeViewfinder:"104595181570709",questionmark:"80880276906111",questionmarkCircle:"121510622803439",questionmarkDiamond:"131080964700897",questionmarkSquare:"72864331831173",quoteBubble:"103878791163454",quoteClosing:"118643231228533",quoteOpening:"103445457344425",rainbow:"122459289380054",rays:"103853957057967",recordCircle:"118850296850025",recordingtape:"123485659101411",rectangle:"105842035689856",rectangleBadgeCheckmark:"138477173171828",rectangleOnRectangle:"93744957969363",rectangleStack:"116436365604694",repeat1:"86869926343704",repeatGlyph:"94715683784128",returnGlyph:"125022377592914",rhombus:"97211209378526",rotate3d:"93761802614112",rotateLeft:"98799628588304",rotateRight:"111275860515167",ruler:"124580708960964",safari:"134813194739204",sailboat:"124223873287376",scalemass:"133153878762852",scanner:"78787533209735",scissors:"134014368605943",scissorsCircle:"73749284657232",scooter:"101451506223502",scope:"138965519058977",screwdriver:"108754384830635",scribble:"112659538886348",scroll:"100275128356418",seal:"116680651128574",sensor:"99545470323641",serverRack:"87471642858713",sharedWithYou:"99587894742741",sharedWithYouCircle:"105105656683870",shield:"91456099996277",shieldCheckered:"122359446295344",shieldSlash:"127623631983240",shippingbox:"107938215608690",shippingboxCircle:"102547406990516",shoe:"82493855899710",shoeCircle:"90588951026587",shuffle:"87450497439316",shuffleCircle:"133059088881917",signature:"99872213385309",signpostLeft:"82043050227523",signpostRight:"125234331963023",snowflake:"94996818832550",snowflakeCircle:"136095050387598",soccerball:"93588660811184",soccerballCircle:"112098460084295",sofa:"90257588118101",sparkle:"137342676578759",sparkleMagnifyingglass:"97868818415034",sparkles:"136785461727211",speaker:"100089005176028",speakerCircle:"95286777593066",speakerMinus:"87951749521691",speakerPlus:"113437716920071",speakerSlash:"111271654439696",speakerWave2:"125400878293762",speakerWave3:"83682739710738",square:"129582598166480",squareAndArrowUp:"76100481665919",squareAndPencil:"140076550722533",squareGrid3x3:"131603440779190",squareOnSquare:"83114835552488",star:"121044708288511",starBubble:"90730129592978",starCircle:"74113798414652",starSlash:"82419419900719",starSquare:"137365351954235",steeringwheel:"92183035957801",steeringwheelCircle:"103709474487322",stethoscope:"89329640332709",stethoscopeCircle:"133416066230092",stop:"105695319911866",stopCircle:"137732435777947",stopwatch:"113139216636221",storefront:"86584275512423",storefrontCircle:"84046393260817",sun:"70966423109015",sunMax:"70966423109015",sunMin:"134147267476594",sunCircle:"116061290404119",sunrise:"86522868392545",sunriseCircle:"102096127517282",sunset:"98250111223411",sunsetCircle:"118261521702696",tag:"120982593056390",tagCircle:"137127479586070",tagSlash:"75512320803484",tagSquare:"122755613849311",target:"133083478000285",teddybear:"109324656874845",ticket:"110925526107379",timelapse:"83242866202757",timer:"135824106698294",timerCircle:"89099539604505",tornado:"123649806863264",tornadoCircle:"86814092515491",tortoise:"96267357253452",tortoiseCircle:"80695585362980",touchid:"102431783184781",trash:"78126576618726",trashCircle:"74847809036755",trashSlash:"138785965824409",tree:"124716247326474",treeCircle:"125501930381970",triangle:"117056701383483",triangleCircle:"131013922022315",trophy:"114768961322644",trophyCircle:"131353197601526",tropicalstorm:"104920374967118",tshirt:"105519615410765",tshirtCircle:"113143848007202",umbrella:"139873711710370",underline:"130727477130834",video:"116674608022538",videoBadgeCheckmark:"100590959863177",videoBadgePlus:"110276669673190",videoCircle:"80336523442172",videoSlash:"104694593162011",viewfinder:"107163384837844",viewfinderCircle:"87068760477512",visionpro:"76932342920990",wandAndRays:"123378637843142",wandAndRaysInverse:"122867501488879",wandAndStars:"95449961416091",wifi:"121202214555256",wifiCircle:"114091788211357",wifiExclamationmark:"85758132404029",wifiSlash:"113880302917880",wind:"97805301082946",windCircle:"127880345932797",wineglass:"117555650477049",wrenchAdjustable:"101329895864399",wrenchAndScrewdriver:"82772346778192",xmark:"74305353078098",xmarkApp:"98017685577280",xmarkCircle:"129591096461118",xmarkDiamond:"135421117881034",xmarkOctagon:"136123728807852",xmarkRectangle:"139899770012733",xmarkSeal:"135122266065960",xmarkShield:"138130228413169",xmarkSquare:"122807484131120",yensign:"94276977373948",yensignCircle:"121345638639744",zzz:"137515429343264"
+};
+
+const allNames = Object.keys(symbols).sort();
+const grid = document.getElementById('grid');
+const countEl = document.getElementById('count');
+const toast = document.getElementById('toast');
+let page = 0;
+const PER_PAGE = 180;
+let current = allNames;
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  clearTimeout(window._t);
+  window._t = setTimeout(() => toast.style.display = 'none', 1600);
+}
+
+function copyName(name) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(name).then(() => showToast('✓ คัดลอก: ' + name)).catch(() => fallbackCopy(name));
+  } else fallbackCopy(name);
+}
+function fallbackCopy(name) {
+  const ta = document.createElement('textarea');
+  ta.value = name; document.body.appendChild(ta); ta.select();
+  document.execCommand('copy'); document.body.removeChild(ta);
+  showToast('✓ คัดลอก: ' + name);
+}
+
+function renderCards(names, append) {
+  if (!append) grid.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  names.forEach(name => {
+    const id = symbols[name];
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.title = 'คลิกเพื่อ copy: ' + name;
+    const img = document.createElement('img');
+    img.src = `https://www.roblox.com/asset/?id=${id}`;
+    img.alt = name;
+    img.loading = 'lazy';
+    img.onerror = () => img.classList.add('err');
+    const label = document.createElement('div');
+    label.className = 'card-name';
+    label.textContent = name;
+    div.appendChild(img);
+    div.appendChild(label);
+    div.onclick = () => copyName(name);
+    frag.appendChild(div);
+  });
+
+  const existing = grid.querySelector('.more-btn');
+  if (existing) existing.remove();
+
+  grid.appendChild(frag);
+
+  const shown = (page + 1) * PER_PAGE;
+  if (shown < current.length) {
+    const btn = document.createElement('div');
+    btn.className = 'more-btn';
+    btn.textContent = `โหลดเพิ่มอีก ${Math.min(PER_PAGE, current.length - shown)} รายการ (เหลือ ${current.length - shown})`;
+    btn.onclick = () => { page++; renderCards(current.slice(page * PER_PAGE, (page+1) * PER_PAGE), true); };
+    grid.appendChild(btn);
+  }
+}
+
+function render(names) {
+  current = names;
+  page = 0;
+  countEl.textContent = `${names.length} symbols`;
+  renderCards(names.slice(0, PER_PAGE), false);
+}
+
+document.getElementById('search').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase().trim();
+  render(q ? allNames.filter(n => n.toLowerCase().includes(q)) : allNames);
+});
+
+render(allNames);
+</script>
+</body>
+</html>
